@@ -3,7 +3,7 @@ import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 
 import api from '../../services/api';
 
-import { Container, Form, SubmitButton } from './style';
+import { Container, Form, SubmitButton, List } from './style';
 
 export default function Main() {
   const [newRepo, setNewRepo] = useState('');
@@ -43,7 +43,7 @@ export default function Main() {
           onChange={e => handleInputChange(e)}
         />
 
-        <SubmitButton loading={loading}>
+        <SubmitButton loading={loading ? 1 : 0}>
           {loading ? (
             <FaSpinner color="#FFF" size={14} />
           ) : (
@@ -51,6 +51,15 @@ export default function Main() {
           )}
         </SubmitButton>
       </Form>
+
+      <List>
+        {repositories.map(repository => (
+          <li key={repository.name}>
+            <span>{repository.name}</span>
+            <a href="">Detalhes</a>
+          </li>
+        ))}
+      </List>
     </Container>
   );
 }
