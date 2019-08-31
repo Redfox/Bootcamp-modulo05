@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FaChevronRight } from 'react-icons/fa';
 import Proptypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList, IssueStatus } from './style';
+import { Loading, Owner, IssueList, IssueStatus, NextButton } from './style';
 
 // eslint-disable-next-line react/prop-types
 export default function Repository({ match }) {
   const [repository, setRespository] = useState({});
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [statusSelected, setStatusSelected] = useState('All');
+  const [filters, setFilters] = useState({ status: 'All', page: 1 });
 
   const statusIssue = ['All', 'Open', 'Closed'];
 
@@ -23,8 +24,9 @@ export default function Repository({ match }) {
         api.get(`/repos/${repoName}`),
         api.get(`/repos/${repoName}/issues`, {
           params: {
-            state: statusSelected.toLowerCase(),
+            state: filters.status.toLowerCase(),
             per_page: 5,
+            page: filters.page,
           },
         }),
       ]);
@@ -35,14 +37,20 @@ export default function Repository({ match }) {
     }
     fetchReposData();
     // eslint-disable-next-line react/prop-types
-  }, [match.params.repository, statusSelected]);
+  }, [filters.page, filters.status, match.params.repository]);
 
   if (loading) {
     return <Loading>Carregando</Loading>;
   }
 
   const handleChangeStatus = e => {
-    setStatusSelected(e.target.value);
+    const { page } = filters;
+    setFilters({ status: e.target.value, page });
+  };
+
+  const handleNextPage = () => {
+    const { status, page } = filters;
+    setFilters({ status, page: page + 1 });
   };
 
   return (
@@ -79,6 +87,10 @@ export default function Repository({ match }) {
           </li>
         ))}
       </IssueList>
+      <NextButton onClick={() => handleNextPage()}>
+        Proxima Pagina
+        <FaChevronRight />
+      </NextButton>
     </Container>
   );
 }

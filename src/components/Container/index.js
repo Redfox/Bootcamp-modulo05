@@ -7,6 +7,8 @@ const Container = styled.div`
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   padding: 30px;
   margin: 80px auto;
+  display: flex;
+  flex-direction: column;
 
   h1 {
     font-size: 20px;
