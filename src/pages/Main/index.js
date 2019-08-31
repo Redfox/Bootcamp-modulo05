@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 
 import api from '../../services/api';
@@ -9,6 +9,20 @@ export default function Main() {
   const [newRepo, setNewRepo] = useState('');
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // Like didMount
+  useEffect(() => {
+    const repos = localStorage.getItem('repositories');
+
+    if (repos) {
+      setRepositories(JSON.parse(repos));
+    }
+  }, []);
+
+  // Like didUpdate
+  useEffect(() => {
+    localStorage.setItem('repositories', JSON.stringify(repositories));
+  }, [repositories]);
 
   const handleInputChange = e => setNewRepo(e.target.value);
 
