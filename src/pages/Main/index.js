@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -33,14 +35,34 @@ export default function Main() {
 
     setLoading(true);
 
-    const response = await api.get(`/repos/${newRepo}`);
+    try {
+      const response = await api.get(`/repos/${newRepo}`);
 
-    const data = {
-      name: response.data.full_name,
-    };
+      const data = {
+        name: response.data.full_name,
+      };
 
-    setRepositories([...repositories, data]);
-    setNewRepo('');
+      const repoExists = repositories.find(
+        element => element.name === data.name
+      );
+
+      if (repoExists) {
+        toast.warn('Repositorio ja cadastrado');
+        setNewRepo('');
+        setLoading(false);
+        return;
+      }
+
+      setRepositories([...repositories, data]);
+      setNewRepo('');
+    } catch (err) {
+      if (err.response.status === 404) {
+        toast.error('Repositorio nao encontrado');
+      } else {
+        toast.error('Erro ao procurar repositorio');
+      }
+    }
+
     setLoading(false);
   };
 
@@ -78,6 +100,7 @@ export default function Main() {
           </li>
         ))}
       </List>
+      <ToastContainer />
     </Container>
   );
 }
