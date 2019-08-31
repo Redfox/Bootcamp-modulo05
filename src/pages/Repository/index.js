@@ -14,7 +14,6 @@ export default function Repository({ match }) {
 
   useEffect(() => {
     async function fetchReposData() {
-      // eslint-disable-next-line react/prop-types
       const repoName = decodeURIComponent(match.params.repository);
 
       const [repo, issuesRepo] = await Promise.all([
@@ -32,7 +31,8 @@ export default function Repository({ match }) {
       setLoading(false);
     }
     fetchReposData();
-  }, []);
+    // eslint-disable-next-line react/prop-types
+  }, [match.params.repository]);
 
   if (loading) {
     return <Loading>Carregando</Loading>;
