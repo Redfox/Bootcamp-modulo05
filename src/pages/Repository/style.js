@@ -100,3 +100,25 @@ export const IssueList = styled.ul`
     }
   }
 `;
+
+export const IssueStatus = styled.div`
+  p {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    max-width: 400px;
+  }
+
+  select {
+    border: none;
+    background: #7159c1;
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 2px;
+
+    option:hover {
+      cursor: pointer;
+    }
+  }
+`;
