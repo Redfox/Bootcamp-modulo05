@@ -14,7 +14,6 @@ import {
   Button,
 } from './style';
 
-// eslint-disable-next-line react/prop-types
 export default function Repository({ match }) {
   const [repository, setRespository] = useState({});
   const [issues, setIssues] = useState([]);
@@ -48,7 +47,6 @@ export default function Repository({ match }) {
       setLoading(false);
     }
     fetchReposData();
-    // eslint-disable-next-line react/prop-types
   }, [filters.currentPage, match.params.repository]);
 
   useEffect(() => {
@@ -150,10 +148,8 @@ export default function Repository({ match }) {
   );
 }
 
-Repository.prototype = {
+Repository.propTypes = {
   match: Proptypes.shape({
-    params: Proptypes.shape({
-      repository: Proptypes.string,
-    }),
+    params: Proptypes.isRequired,
   }).isRequired,
 };
