@@ -123,20 +123,38 @@ export const IssueStatus = styled.div`
   }
 `;
 
-export const NextButton = styled.button`
-  align-self: flex-end;
-  margin: 10px 0;
-  padding: 2px;
-  border: 0;
-  background: #7159c1;
-  color: #fff;
-  padding: 10px;
-  border-radius: 3px;
+export const Footer = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  justify-content: space-between;
 
-  svg {
-    margin-left: 5px;
+  button {
+    margin: 10px 0;
+    padding: 2px;
+    border: 0;
+    background: #7159c1;
+    color: #fff;
+    padding: 10px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    & + svg {
+      margin: 0 0 0 5px;
+    }
+
+    svg {
+      margin: 0 5px 0 0;
+    }
+  }
+`;
+
+export const Button = styled.button.attrs(props => ({
+  type: 'button',
+  disabled: props.disabled,
+}))`
+  &[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
   }
 `;

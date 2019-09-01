@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronRight } from 'react-icons/fa';
+import { FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 import Proptypes from 'prop-types';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList, IssueStatus, NextButton } from './style';
+import {
+  Loading,
+  Owner,
+  IssueList,
+  IssueStatus,
+  Footer,
+  Button,
+} from './style';
 
 // eslint-disable-next-line react/prop-types
 export default function Repository({ match }) {
   const [repository, setRespository] = useState({});
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ status: 'All', page: 1 });
+  const [filters, setFilters] = useState({
+    status: 'All',
+    currentPage: 1,
+    lastPage: 1,
+  });
 
+  const perPage = 10;
   const statusIssue = ['All', 'Open', 'Closed'];
 
   useEffect(() => {
@@ -25,8 +37,8 @@ export default function Repository({ match }) {
         api.get(`/repos/${repoName}/issues`, {
           params: {
             state: filters.status.toLowerCase(),
-            per_page: 5,
-            page: filters.page,
+            per_page: perPage,
+            page: filters.currentPage,
           },
         }),
       ]);
@@ -37,20 +49,48 @@ export default function Repository({ match }) {
     }
     fetchReposData();
     // eslint-disable-next-line react/prop-types
-  }, [filters.page, filters.status, match.params.repository]);
+  }, [filters.currentPage, match.params.repository]);
+
+  useEffect(() => {
+    const repoName = decodeURIComponent(match.params.repository);
+    async function getAllPages() {
+      const allIssues = await api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: filters.status.toLowerCase(),
+        },
+      });
+
+      setFilters({
+        status: filters.status,
+        currentPage: filters.currentPage,
+        lastPage: Math.ceil(allIssues.data.length / perPage),
+      });
+    }
+
+    getAllPages();
+  }, [filters.status]);
 
   if (loading) {
     return <Loading>Carregando</Loading>;
   }
 
   const handleChangeStatus = e => {
-    const { page } = filters;
-    setFilters({ status: e.target.value, page });
+    setFilters({ status: e.target.value, currentPage: 1 });
   };
 
   const handleNextPage = () => {
-    const { status, page } = filters;
-    setFilters({ status, page: page + 1 });
+    const { status, currentPage, lastPage } = filters;
+    console.log(currentPage, lastPage);
+    if (currentPage !== lastPage) {
+      setFilters({ status, currentPage: currentPage + 1, lastPage });
+    }
+  };
+
+  const handlePrevPage = () => {
+    const { status, currentPage, lastPage } = filters;
+    if (currentPage > 1) {
+      setFilters({ status, currentPage: currentPage - 1, lastPage });
+    }
   };
 
   return (
@@ -70,27 +110,43 @@ export default function Repository({ match }) {
         </select>
       </IssueStatus>
       <IssueList>
-        {issues.map(issue => (
-          <li key={String(issue.id)}>
-            <img src={issue.user.avatar_url} alt={issue.user.login} />
-            <div>
-              <strong>
-                <a href={issue.html_url} target="blank">
-                  {issue.title}
-                </a>
-                {issue.labels.map(label => (
-                  <span key={String(label.id)}>{label.name}</span>
-                ))}
-              </strong>
-              <p>{issue.user.login}</p>
-            </div>
-          </li>
-        ))}
+        {issues.length > 0 ? (
+          issues.map(issue => (
+            <li key={String(issue.id)}>
+              <img src={issue.user.avatar_url} alt={issue.user.login} />
+              <div>
+                <strong>
+                  <a href={issue.html_url} target="blank">
+                    {issue.title}
+                  </a>
+                  {issue.labels.map(label => (
+                    <span key={String(label.id)}>{label.name}</span>
+                  ))}
+                </strong>
+                <p>{issue.user.login}</p>
+              </div>
+            </li>
+          ))
+        ) : (
+          <h1>Acabou</h1>
+        )}
       </IssueList>
-      <NextButton onClick={() => handleNextPage()}>
-        Proxima Pagina
-        <FaChevronRight />
-      </NextButton>
+      <Footer>
+        <Button
+          disabled={filters.currentPage === 1 ? 1 : 0}
+          onClick={() => handlePrevPage()}
+        >
+          <FaChevronLeft />
+          Proxima Pagina
+        </Button>
+        <Button
+          disabled={filters.currentPage === filters.lastPage}
+          onClick={() => handleNextPage()}
+        >
+          Proxima Pagina
+          <FaChevronRight />
+        </Button>
+      </Footer>
     </Container>
   );
 }
