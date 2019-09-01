@@ -80,7 +80,6 @@ export default function Repository({ match }) {
 
   const handleNextPage = () => {
     const { status, currentPage, lastPage } = filters;
-    console.log(currentPage, lastPage);
     if (currentPage !== lastPage) {
       setFilters({ status, currentPage: currentPage + 1, lastPage });
     }
